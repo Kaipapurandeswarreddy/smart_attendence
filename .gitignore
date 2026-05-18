@@ -1,0 +1,44 @@
+# Secrets and local environment
+.git/
+.env
+*.env
+backend/serviceAccountKey.json
+**/serviceAccountKey.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.log
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Flutter / Dart
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+**/build/
+**/coverage/
+**/doc/api/
+**/flutter/ephemeral/
+
+# Android / IDE local files
+**/.gradle/
+**/.kotlin/
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp

@@ -1,0 +1,20 @@
+"""
+Attendance record Firestore document model — collection name & field constants.
+"""
+
+COLLECTION = "attendance_records"
+
+ATTENDANCE_ID = "attendance_id"
+STUDENT_UID = "student_uid"
+CLASSROOM_ID = "classroom_id"
+SESSION_ID = "session_id"
+TIMESTAMP = "timestamp"
+GPS_LAT = "gps_lat"
+GPS_LNG = "gps_lng"
+GPS_ACCURACY_METERS = "gps_accuracy_meters"
+DEVICE_UUID = "device_uuid"
+DEVICE_FINGERPRINT_HASH = "device_fingerprint_hash"
+PAYLOAD_SIGNATURE = "payload_signature"
+ATTENDANCE_STATUS = "attendance_status"
+IS_FLAGGED = "is_flagged"
+FLAG_REASON = "flag_reason"
