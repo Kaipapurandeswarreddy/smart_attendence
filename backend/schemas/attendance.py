@@ -15,6 +15,7 @@ class AttendanceRequest(BaseModel):
     gps_accuracy_meters: float
     device_uuid: str
     device_fingerprint_hash: str
+    session_token: str
     payload_timestamp: int
     payload_signature: str       # client-side HMAC (device integrity)
 

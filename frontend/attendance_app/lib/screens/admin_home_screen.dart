@@ -49,7 +49,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        
         child: SafeArea(
           child: Column(
             children: [
@@ -125,7 +124,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white, borderRadius: BorderRadius.circular(14), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4))],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: Offset(0, 4))
+        ],
       ),
       child: TabBar(
         controller: _tabCtrl,
@@ -181,7 +187,8 @@ class _QRTabState extends State<_QRTab> with AutomaticKeepAliveClientMixin {
               children: [
                 _sectionTitle('Select Classroom'),
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Color(0xFF6C63FF)),
+                  icon: const Icon(Icons.add_circle_outline,
+                      color: Color(0xFF6C63FF)),
                   tooltip: 'Add Classroom',
                   onPressed: () => _showAddClassroomDialog(context),
                 )
@@ -207,7 +214,8 @@ class _QRTabState extends State<_QRTab> with AutomaticKeepAliveClientMixin {
                             strokeWidth: 2, color: Colors.black87),
                       )
                     : const Icon(Icons.qr_code_2_rounded),
-                label: Text(admin.isLoading ? 'Generating…' : 'Generate QR Code'),
+                label:
+                    Text(admin.isLoading ? 'Generating…' : 'Generate QR Code'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6C63FF),
                   foregroundColor: Colors.black87,
@@ -263,7 +271,8 @@ class _QRTabState extends State<_QRTab> with AutomaticKeepAliveClientMixin {
             return AlertDialog(
               backgroundColor: Colors.white,
               surfaceTintColor: Colors.transparent,
-              title: const Text('Add Classroom', style: TextStyle(color: Colors.black87)),
+              title: const Text('Add Classroom',
+                  style: TextStyle(color: Colors.black87)),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -271,30 +280,40 @@ class _QRTabState extends State<_QRTab> with AutomaticKeepAliveClientMixin {
                     TextField(
                       controller: idCtrl,
                       style: const TextStyle(color: Colors.black87),
-                      decoration: const InputDecoration(labelText: 'Classroom ID (e.g., CS-101)', labelStyle: TextStyle(color: Colors.black87)),
+                      decoration: const InputDecoration(
+                          labelText: 'Classroom ID (e.g., CS-101)',
+                          labelStyle: TextStyle(color: Colors.black87)),
                     ),
                     TextField(
                       controller: nameCtrl,
                       style: const TextStyle(color: Colors.black87),
-                      decoration: const InputDecoration(labelText: 'Name', labelStyle: TextStyle(color: Colors.black87)),
+                      decoration: const InputDecoration(
+                          labelText: 'Name',
+                          labelStyle: TextStyle(color: Colors.black87)),
                     ),
                     TextField(
                       controller: latCtrl,
                       keyboardType: TextInputType.number,
                       style: const TextStyle(color: Colors.black87),
-                      decoration: const InputDecoration(labelText: 'GPS Latitude', labelStyle: TextStyle(color: Colors.black87)),
+                      decoration: const InputDecoration(
+                          labelText: 'GPS Latitude',
+                          labelStyle: TextStyle(color: Colors.black87)),
                     ),
                     TextField(
                       controller: lngCtrl,
                       keyboardType: TextInputType.number,
                       style: const TextStyle(color: Colors.black87),
-                      decoration: const InputDecoration(labelText: 'GPS Longitude', labelStyle: TextStyle(color: Colors.black87)),
+                      decoration: const InputDecoration(
+                          labelText: 'GPS Longitude',
+                          labelStyle: TextStyle(color: Colors.black87)),
                     ),
                     TextField(
                       controller: radCtrl,
                       keyboardType: TextInputType.number,
                       style: const TextStyle(color: Colors.black87),
-                      decoration: const InputDecoration(labelText: 'Allowed Radius (meters)', labelStyle: TextStyle(color: Colors.black87)),
+                      decoration: const InputDecoration(
+                          labelText: 'Allowed Radius (meters)',
+                          labelStyle: TextStyle(color: Colors.black87)),
                     ),
                   ],
                 ),
@@ -302,39 +321,58 @@ class _QRTabState extends State<_QRTab> with AutomaticKeepAliveClientMixin {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.black87)),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.black87)),
                 ),
                 ElevatedButton(
-                  onPressed: loading ? null : () async {
-                    if (idCtrl.text.isEmpty || nameCtrl.text.isEmpty) return;
-                    setStateDialog(() => loading = true);
-                    final admin = context.read<AdminProvider>();
-                    
-                    final success = await admin.createClassroom(
-                      id: idCtrl.text,
-                      name: nameCtrl.text,
-                      gpsLat: double.tryParse(latCtrl.text) ?? 0.0,
-                      gpsLng: double.tryParse(lngCtrl.text) ?? 0.0,
-                      allowedRadiusMeters: int.tryParse(radCtrl.text) ?? 50,
-                    );
-                    
-                    setStateDialog(() => loading = false);
-                    if (success) {
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Classroom created successfully!'), backgroundColor: Colors.green),
-                      );
-                      setState(() {
-                        _selectedClassroom = idCtrl.text;
-                      });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(admin.error ?? 'Failed to create'), backgroundColor: Colors.red),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6C63FF)),
-                  child: loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black87)) : const Text('Create', style: TextStyle(color: Colors.black87)),
+                  onPressed: loading
+                      ? null
+                      : () async {
+                          if (idCtrl.text.isEmpty || nameCtrl.text.isEmpty)
+                            return;
+                          setStateDialog(() => loading = true);
+                          final admin = context.read<AdminProvider>();
+
+                          final success = await admin.createClassroom(
+                            id: idCtrl.text,
+                            name: nameCtrl.text,
+                            gpsLat: double.tryParse(latCtrl.text) ?? 0.0,
+                            gpsLng: double.tryParse(lngCtrl.text) ?? 0.0,
+                            allowedRadiusMeters:
+                                int.tryParse(radCtrl.text) ?? 50,
+                          );
+
+                          setStateDialog(() => loading = false);
+                          if (success) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Classroom created successfully!'),
+                                  backgroundColor: Colors.green),
+                            );
+                            setState(() {
+                              _selectedClassroom = idCtrl.text;
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text(admin.error ?? 'Failed to create'),
+                                  backgroundColor: Colors.red),
+                            );
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6C63FF)),
+                  child: loading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.black87))
+                      : const Text('Create',
+                          style: TextStyle(color: Colors.black87)),
                 ),
               ],
             );
@@ -405,7 +443,10 @@ class _QRTabState extends State<_QRTab> with AutomaticKeepAliveClientMixin {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4)),
               ],
             ),
             child: QrImageView(
@@ -527,9 +568,8 @@ class _StudentsTabState extends State<_StudentsTab>
       builder: (_, admin, __) {
         final filtered = admin.students.where((s) {
           final name = (s['name'] ?? '').toString().toLowerCase();
-          final roll = (s['student_roll_id'] ?? '').toString().toLowerCase();
           final q = _search.toLowerCase();
-          return name.contains(q) || roll.contains(q);
+          return name.contains(q);
         }).toList();
 
         return Column(
@@ -541,7 +581,7 @@ class _StudentsTabState extends State<_StudentsTab>
                 onChanged: (v) => setState(() => _search = v),
                 style: const TextStyle(color: Colors.black87, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Search by name or roll ID…',
+                  hintText: 'Search by name',
                   hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
                   prefixIcon: Icon(Icons.search_rounded,
                       color: Colors.black.withOpacity(0.4), size: 20),
@@ -579,6 +619,12 @@ class _StudentsTabState extends State<_StudentsTab>
                   ),
                   const Spacer(),
                   IconButton(
+                    icon: const Icon(Icons.admin_panel_settings_rounded,
+                        color: Color(0xFF6C63FF), size: 20),
+                    tooltip: 'Grant Admin Access',
+                    onPressed: () => _showGrantAdminDialog(context),
+                  ),
+                  IconButton(
                     icon: const Icon(Icons.refresh_rounded,
                         color: Colors.black38, size: 20),
                     onPressed: () => admin.fetchStudents(),
@@ -591,8 +637,8 @@ class _StudentsTabState extends State<_StudentsTab>
             if (admin.isLoading && admin.students.isEmpty)
               const Expanded(
                   child: Center(
-                      child: CircularProgressIndicator(
-                          color: Color(0xFF6C63FF))))
+                      child:
+                          CircularProgressIndicator(color: Color(0xFF6C63FF))))
             else
               Expanded(
                 child: ListView.builder(
@@ -608,8 +654,8 @@ class _StudentsTabState extends State<_StudentsTab>
   }
 
   Widget _buildStudentCard(Map<String, dynamic> student) {
+    final uid = (student['uid'] ?? '').toString();
     final name = student['name'] ?? 'Unknown';
-    final roll = student['student_roll_id'] ?? '';
     final email = student['email'] ?? '';
     final isActive = student['is_active'] ?? true;
     final deviceModel = student['registered_device_model'] ?? 'N/A';
@@ -666,10 +712,6 @@ class _StudentsTabState extends State<_StudentsTab>
                         color: Colors.black87,
                         fontSize: 15,
                         fontWeight: FontWeight.w600)),
-                const SizedBox(height: 3),
-                Text('Roll: $roll',
-                    style: TextStyle(
-                        color: Colors.black.withOpacity(0.6), fontSize: 12)),
                 Text(email,
                     style: TextStyle(
                         color: Colors.black.withOpacity(0.4), fontSize: 11)),
@@ -699,7 +741,194 @@ class _StudentsTabState extends State<_StudentsTab>
               ),
             ),
           ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert_rounded,
+                color: Colors.black45, size: 20),
+            color: Colors.white,
+            onSelected: (value) {
+              if (value == 'release') {
+                _showReleaseDeviceDialog(context, uid, name.toString());
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem<String>(
+                value: 'release',
+                child: Row(
+                  children: [
+                    Icon(Icons.phonelink_erase_rounded,
+                        color: Colors.redAccent, size: 18),
+                    SizedBox(width: 10),
+                    Text('Release Device'),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  void _showGrantAdminDialog(BuildContext context) {
+    final inputCtrl = TextEditingController();
+    bool loading = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          title: const Text('Grant Admin Access',
+              style: TextStyle(color: Colors.black87)),
+          content: TextField(
+            controller: inputCtrl,
+            style: const TextStyle(color: Colors.black87),
+            decoration: const InputDecoration(
+              labelText: 'Firebase UID or email',
+              labelStyle: TextStyle(color: Colors.black87),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: loading ? null : () => Navigator.pop(ctx),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.black87)),
+            ),
+            ElevatedButton(
+              onPressed: loading
+                  ? null
+                  : () async {
+                      final value = inputCtrl.text.trim();
+                      if (value.isEmpty) return;
+
+                      setStateDialog(() => loading = true);
+                      final admin = context.read<AdminProvider>();
+                      final success = value.contains('@')
+                          ? await admin.grantAdmin(email: value)
+                          : await admin.grantAdmin(uid: value);
+                      setStateDialog(() => loading = false);
+
+                      if (!context.mounted) return;
+                      if (success) {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Admin access granted'),
+                              backgroundColor: Color(0xFF4CAF50)),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(admin.error ??
+                                  'Failed to grant admin access'),
+                              backgroundColor: Colors.redAccent),
+                        );
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6C63FF)),
+              child: loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.black87))
+                  : const Text('Grant',
+                      style: TextStyle(color: Colors.black87)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showReleaseDeviceDialog(
+    BuildContext context,
+    String studentUid,
+    String studentName,
+  ) {
+    final reasonCtrl = TextEditingController(text: 'Admin released device');
+    bool loading = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          title: const Text('Release Device',
+              style: TextStyle(color: Colors.black87)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                studentName,
+                style: const TextStyle(
+                    color: Colors.black87, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reasonCtrl,
+                style: const TextStyle(color: Colors.black87),
+                decoration: const InputDecoration(
+                  labelText: 'Reason',
+                  labelStyle: TextStyle(color: Colors.black87),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: loading ? null : () => Navigator.pop(ctx),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.black87)),
+            ),
+            ElevatedButton(
+              onPressed: loading || studentUid.isEmpty
+                  ? null
+                  : () async {
+                      setStateDialog(() => loading = true);
+                      final admin = context.read<AdminProvider>();
+                      final success = await admin.releaseDevice(
+                        studentUid: studentUid,
+                        reason: reasonCtrl.text.trim().isEmpty
+                            ? 'Admin released device'
+                            : reasonCtrl.text.trim(),
+                      );
+                      setStateDialog(() => loading = false);
+
+                      if (!context.mounted) return;
+                      if (success) {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Device released'),
+                              backgroundColor: Color(0xFF4CAF50)),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  admin.error ?? 'Failed to release device'),
+                              backgroundColor: Colors.redAccent),
+                        );
+                      }
+                    },
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              child: loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : const Text('Release',
+                      style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -734,10 +963,13 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
         final data = admin.analytics ?? {};
         final totalStudents = data['total_students'] ?? 0;
         final totalRecords = data['total_records'] ?? 0;
-        final byClassroom = Map<String, int>.from(data['records_by_classroom'] ?? {});
+        final byClassroom =
+            Map<String, int>.from(data['records_by_classroom'] ?? {});
         final byDate = Map<String, int>.from(data['records_by_date'] ?? {});
-        final bySession = Map<String, int>.from(data['records_by_session'] ?? {});
-        final detailedRecords = Map<String, dynamic>.from(data['detailed_records'] ?? {});
+        final bySession =
+            Map<String, int>.from(data['records_by_session'] ?? {});
+        final detailedRecords =
+            Map<String, dynamic>.from(data['detailed_records'] ?? {});
 
         return RefreshIndicator(
           onRefresh: () async => admin.fetchAnalytics(),
@@ -765,7 +997,8 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.sync_rounded, color: Colors.black87, size: 22),
+                      icon: const Icon(Icons.sync_rounded,
+                          color: Colors.black87, size: 22),
                       onPressed: () => admin.fetchAnalytics(),
                       tooltip: 'Refresh Data',
                     ),
@@ -776,21 +1009,33 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
 
               // Thin Summary Bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 4))
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4))
                   ],
                   border: Border.all(color: Colors.black.withOpacity(0.05)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _thinStat(Icons.people_alt_rounded, 'Total Students', '$totalStudents', const Color(0xFF00E5FF)),
-                    Container(height: 30, width: 1, color: Colors.black.withOpacity(0.2)),
-                    _thinStat(Icons.assignment_turned_in_rounded, 'Total Records', '$totalRecords', const Color(0xFFB388FF)),
+                    _thinStat(Icons.people_alt_rounded, 'Total Students',
+                        '$totalStudents', const Color(0xFF00E5FF)),
+                    Container(
+                        height: 30,
+                        width: 1,
+                        color: Colors.black.withOpacity(0.2)),
+                    _thinStat(
+                        Icons.assignment_turned_in_rounded,
+                        'Total Records',
+                        '$totalRecords',
+                        const Color(0xFFB388FF)),
                   ],
                 ),
               ),
@@ -812,16 +1057,41 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5))
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5))
                     ],
                   ),
                   child: Column(
                     children: [
-                      _sessionRow('Morning (10:00 AM)', bySession['Morning (10:00 AM)'] ?? 0, totalRecords, const Color(0xFFFFCA28), Icons.wb_sunny_rounded, detailedRecords),
-                      const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(color: Colors.black12, height: 1)),
-                      _sessionRow('Afternoon (1:30 PM)', bySession['Afternoon (1:30 PM)'] ?? 0, totalRecords, const Color(0xFFFFA726), Icons.wb_twilight_rounded, detailedRecords),
-                      const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(color: Colors.black12, height: 1)),
-                      _sessionRow('Evening (5:00 PM)', bySession['Evening (5:00 PM)'] ?? 0, totalRecords, const Color(0xFF5C6BC0), Icons.nights_stay_rounded, detailedRecords),
+                      _sessionRow(
+                          'Morning (10:00 AM)',
+                          bySession['Morning (10:00 AM)'] ?? 0,
+                          totalRecords,
+                          const Color(0xFFFFCA28),
+                          Icons.wb_sunny_rounded,
+                          detailedRecords),
+                      const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Divider(color: Colors.black12, height: 1)),
+                      _sessionRow(
+                          'Afternoon (1:30 PM)',
+                          bySession['Afternoon (1:30 PM)'] ?? 0,
+                          totalRecords,
+                          const Color(0xFFFFA726),
+                          Icons.wb_twilight_rounded,
+                          detailedRecords),
+                      const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Divider(color: Colors.black12, height: 1)),
+                      _sessionRow(
+                          'Evening (5:00 PM)',
+                          bySession['Evening (5:00 PM)'] ?? 0,
+                          totalRecords,
+                          const Color(0xFF5C6BC0),
+                          Icons.nights_stay_rounded,
+                          detailedRecords),
                     ],
                   ),
                 ),
@@ -842,16 +1112,24 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5))
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5))
                     ],
                   ),
                   child: Column(
-                    children: detailedRecords.entries.toList().take(7).map((dateEntry) {
+                    children: detailedRecords.entries
+                        .toList()
+                        .take(7)
+                        .map((dateEntry) {
                       final dateStr = dateEntry.key;
-                      final sessionsMap = Map<String, dynamic>.from(dateEntry.value);
-                      
+                      final sessionsMap =
+                          Map<String, dynamic>.from(dateEntry.value);
+
                       return Theme(
-                        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                        data: Theme.of(context)
+                            .copyWith(dividerColor: Colors.transparent),
                         child: ExpansionTile(
                           iconColor: const Color(0xFFFF5252),
                           collapsedIconColor: Colors.black54,
@@ -865,12 +1143,15 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
                           ),
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
                               child: Column(
-                                children: sessionsMap.entries.map((sessionEntry) {
+                                children:
+                                    sessionsMap.entries.map((sessionEntry) {
                                   final sessionName = sessionEntry.key;
-                                  final students = List<String>.from(sessionEntry.value);
-                                  
+                                  final students =
+                                      List<String>.from(sessionEntry.value);
+
                                   Color sessionColor = const Color(0xFFFFCA28);
                                   IconData sessionIcon = Icons.wb_sunny_rounded;
                                   if (sessionName.contains('Afternoon')) {
@@ -882,33 +1163,44 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
                                   }
 
                                   return Theme(
-                                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                                    data: Theme.of(context).copyWith(
+                                        dividerColor: Colors.transparent),
                                     child: ExpansionTile(
-                                      tilePadding: const EdgeInsets.symmetric(horizontal: 8),
+                                      tilePadding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
                                       iconColor: sessionColor,
-                                      collapsedIconColor: sessionColor.withOpacity(0.5),
+                                      collapsedIconColor:
+                                          sessionColor.withOpacity(0.5),
                                       title: Row(
                                         children: [
-                                          Icon(sessionIcon, color: sessionColor, size: 20),
+                                          Icon(sessionIcon,
+                                              color: sessionColor, size: 20),
                                           const SizedBox(width: 12),
                                           Text(
                                             sessionName,
                                             style: TextStyle(
-                                              color: Colors.black.withOpacity(0.9),
+                                              color:
+                                                  Colors.black.withOpacity(0.9),
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                           const Spacer(),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: sessionColor.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(10),
+                                              color:
+                                                  sessionColor.withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Text(
                                               '${students.length}',
-                                              style: TextStyle(color: sessionColor, fontSize: 12, fontWeight: FontWeight.bold),
+                                              style: TextStyle(
+                                                  color: sessionColor,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                         ],
@@ -917,21 +1209,44 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
                                         if (students.isEmpty)
                                           Padding(
                                             padding: const EdgeInsets.all(12.0),
-                                            child: Text('No attendance for this session', style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 13)),
+                                            child: Text(
+                                                'No attendance for this session',
+                                                style: TextStyle(
+                                                    color: Colors.black
+                                                        .withOpacity(0.4),
+                                                    fontSize: 13)),
                                           )
                                         else
-                                          ...students.map((name) => Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 6.0),
-                                            child: Row(
-                                              children: [
-                                                const Icon(Icons.person_rounded, size: 16, color: Colors.black38),
-                                                const SizedBox(width: 10),
-                                                Expanded(
-                                                  child: Text(name, style: TextStyle(color: Colors.black.withOpacity(0.7), fontSize: 13)),
-                                                ),
-                                              ],
-                                            ),
-                                          )).toList(),
+                                          ...students
+                                              .map((name) => Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 40.0,
+                                                        vertical: 6.0),
+                                                    child: Row(
+                                                      children: [
+                                                        const Icon(
+                                                            Icons
+                                                                .person_rounded,
+                                                            size: 16,
+                                                            color:
+                                                                Colors.black38),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        Expanded(
+                                                          child: Text(name,
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.7),
+                                                                  fontSize:
+                                                                      13)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ))
+                                              .toList(),
                                         const SizedBox(height: 8),
                                       ],
                                     ),
@@ -961,15 +1276,24 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: const TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(label, style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.w600)),
+            Text(value,
+                style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)),
+            Text(label,
+                style: TextStyle(
+                    color: Colors.black.withOpacity(0.6),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600)),
           ],
         )
       ],
     );
   }
 
-  Widget _sectionHeader({required String title, required IconData icon, required Color color}) {
+  Widget _sectionHeader(
+      {required String title, required IconData icon, required Color color}) {
     return Row(
       children: [
         Icon(icon, color: color, size: 22),
@@ -987,9 +1311,10 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
     );
   }
 
-  Widget _sessionRow(String label, int count, int total, Color color, IconData icon, Map<String, dynamic> detailedRecords) {
+  Widget _sessionRow(String label, int count, int total, Color color,
+      IconData icon, Map<String, dynamic> detailedRecords) {
     final double percent = total > 0 ? (count / total) : 0.0;
-    
+
     // Extract unique students for this session across all dates
     final uniqueStudents = <String>{};
     for (var dateEntry in detailedRecords.values) {
@@ -1069,21 +1394,30 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
           if (students.isEmpty)
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Text('No unique students yet', style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 13)),
+              child: Text('No unique students yet',
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(0.4), fontSize: 13)),
             )
           else
-            ...students.map((name) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 6.0),
-              child: Row(
-                children: [
-                  const Icon(Icons.person_rounded, size: 16, color: Colors.black38),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(name, style: TextStyle(color: Colors.black.withOpacity(0.7), fontSize: 13)),
-                  ),
-                ],
-              ),
-            )).toList(),
+            ...students
+                .map((name) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0, vertical: 6.0),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.person_rounded,
+                              size: 16, color: Colors.black38),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(name,
+                                style: TextStyle(
+                                    color: Colors.black.withOpacity(0.7),
+                                    fontSize: 13)),
+                          ),
+                        ],
+                      ),
+                    ))
+                .toList(),
           const SizedBox(height: 8),
         ],
       ),
@@ -1107,7 +1441,9 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
             children: [
               Text(label,
                   style: const TextStyle(
-                      color: Colors.black87, fontSize: 14, fontWeight: FontWeight.w500)),
+                      color: Colors.black87,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500)),
               Text('$value pts',
                   style: TextStyle(
                       color: Colors.black.withOpacity(0.6),
@@ -1167,9 +1503,12 @@ class _AnalyticsTabState extends State<_AnalyticsTab>
       ),
       child: Column(
         children: [
-          Icon(Icons.bar_chart_rounded, size: 48, color: Colors.black.withOpacity(0.2)),
+          Icon(Icons.bar_chart_rounded,
+              size: 48, color: Colors.black.withOpacity(0.2)),
           const SizedBox(height: 12),
-          Text(msg, style: TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 14)),
+          Text(msg,
+              style: TextStyle(
+                  color: Colors.black.withOpacity(0.5), fontSize: 14)),
         ],
       ),
     );

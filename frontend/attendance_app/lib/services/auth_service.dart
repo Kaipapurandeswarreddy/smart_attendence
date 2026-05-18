@@ -18,11 +18,13 @@ class AuthService {
   // ── Firebase Auth ──────────────────────────────────────────────
 
   Future<UserCredential> registerWithEmail(
-      String email, String password) async {
-    return await _auth.createUserWithEmailAndPassword(
+      String email, String password, String name) async {
+    final credential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+    await updateCurrentUserDisplayName(name);
+    return credential;
   }
 
   Future<UserCredential> loginWithEmail(String email, String password) async {
@@ -34,6 +36,15 @@ class AuthService {
 
   Future<String?> getIdToken() async {
     return await _auth.currentUser?.getIdToken(true); // force refresh
+  }
+
+  Future<void> updateCurrentUserDisplayName(String name) async {
+    final trimmedName = name.trim();
+    final user = _auth.currentUser;
+    if (user == null || trimmedName.isEmpty) return;
+
+    await user.updateDisplayName(trimmedName);
+    await user.reload();
   }
 
   // ── Backend registration ───────────────────────────────────────
@@ -100,8 +111,7 @@ class AuthService {
       final data = jsonDecode(response.body);
       // Persist session token
       await _secureStorage.write(
-          key: AppConfig.secureStorageSessionKey,
-          value: data['session_token']);
+          key: AppConfig.secureStorageSessionKey, value: data['session_token']);
       await _secureStorage.write(
           key: AppConfig.secureStorageStudentUUID, value: uuid);
       return data;

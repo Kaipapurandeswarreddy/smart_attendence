@@ -15,7 +15,7 @@ from schemas.attendance import AttendanceRequest, AttendanceResponse
 from security.firebase_auth_handler import get_current_user
 from security.payload_verifier import verify_attendance_payload
 from security.rate_limiter import check_rate_limit
-from services import attendance_service, device_service, gps_service, time_service
+from services import attendance_service, device_service, gps_service, session_service, time_service
 from services.qr_service import verify_qr_signature
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
@@ -68,6 +68,13 @@ async def mark_attendance(
         )
 
     # ── Step 5: Device validation ─────────────────────────────────
+    session_ok = await session_service.validate_session(uid, payload.session_token)
+    if not session_ok:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Login session expired. Please sign in again.",
+        )
+
     device_ok = await device_service.validate_device(
         uid, payload.device_uuid, payload.device_fingerprint_hash
     )

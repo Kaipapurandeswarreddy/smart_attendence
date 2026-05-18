@@ -70,7 +70,7 @@ class _ScanScreenState extends State<ScanScreen> {
       context: context,
       isDismissible: false,
       enableDrag: false,
-      backgroundColor: const Color(0xFF1E1B3A),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -123,7 +123,7 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() => _isProcessing = false);
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E1B3A),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -169,6 +169,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6C63FF),
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
@@ -221,13 +222,13 @@ class _ScanScreenState extends State<ScanScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios_new,
-                        color: Colors.black87, size: 20),
+                        color: Colors.white, size: 20),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Text(
                     'Scan QR Code',
                     style: TextStyle(
-                        color: Colors.black87,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600),
                   ),

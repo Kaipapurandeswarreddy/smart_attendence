@@ -59,7 +59,6 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> register(
     String name,
-    String rollId,
     String email,
     String password,
   ) async {
@@ -71,7 +70,11 @@ class AuthProvider extends ChangeNotifier {
       // Step 1: Create Firebase Auth account (or sign in if it already exists
       // from a previous failed registration attempt).
       try {
-        final cred = await _authService.registerWithEmail(email, password);
+        final cred = await _authService.registerWithEmail(
+          email,
+          password,
+          name,
+        );
         _firebaseUser = cred.user;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'email-already-in-use') {
@@ -79,6 +82,7 @@ class AuthProvider extends ChangeNotifier {
           try {
             final cred = await _authService.loginWithEmail(email, password);
             _firebaseUser = cred.user;
+            await _authService.updateCurrentUserDisplayName(name);
           } on FirebaseAuthException catch (_) {
             // Password doesn't match the existing account
             _error =
@@ -94,15 +98,8 @@ class AuthProvider extends ChangeNotifier {
 
       // Step 2: Register device with the backend. If the student doc already
       // exists the backend returns 409 which is fine — we just continue.
-      try {
-        await _authService.registerDeviceWithBackend(name, rollId);
-      } catch (e) {
-        final msg = e.toString();
-        // 409 = already registered, that's OK
-        if (!msg.contains('already registered')) {
-          rethrow;
-        }
-      }
+      await _authService.registerDeviceWithBackend(name, '');
+      await _authService.loginDeviceWithBackend();
 
       // Add a small delay to ensure the listener's fetch doesn't overwrite this one
       await Future.delayed(const Duration(milliseconds: 500));
@@ -176,10 +173,7 @@ class AuthProvider extends ChangeNotifier {
     if (uid == null) return;
 
     try {
-      final doc = await getFirestore()
-          .collection('students')
-          .doc(uid)
-          .get();
+      final doc = await getFirestore().collection('students').doc(uid).get();
 
       if (doc.exists && doc.data() != null) {
         _studentData = StudentModel.fromMap(doc.data()!);

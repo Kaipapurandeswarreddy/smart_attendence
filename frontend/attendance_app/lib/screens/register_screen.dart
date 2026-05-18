@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'home_screen.dart';
 
-/// Registration screen — Full Name, Roll ID, Email, Password, Confirm Password.
+/// Registration screen — Full Name, Email, Password, Confirm Password.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -15,7 +15,6 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
-  final _rollCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
@@ -25,7 +24,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _rollCtrl.dispose();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
@@ -38,7 +36,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final auth = context.read<AuthProvider>();
     final success = await auth.register(
       _nameCtrl.text.trim(),
-      _rollCtrl.text.trim(),
       _emailCtrl.text.trim(),
       _passwordCtrl.text,
     );
@@ -58,7 +55,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -107,8 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       'Register to start marking attendance',
                       style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black.withOpacity(0.55)),
+                          fontSize: 14, color: Colors.black.withOpacity(0.55)),
                     ),
                     const SizedBox(height: 30),
 
@@ -118,15 +113,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       icon: Icons.person_outline,
                       validator: (v) =>
                           (v == null || v.isEmpty) ? 'Name is required' : null,
-                    ),
-                    const SizedBox(height: 14),
-                    _buildField(
-                      controller: _rollCtrl,
-                      hint: 'Roll / Student ID',
-                      icon: Icons.badge_outlined,
-                      validator: (v) => (v == null || v.isEmpty)
-                          ? 'Roll ID is required'
-                          : null,
                     ),
                     const SizedBox(height: 14),
                     _buildField(
@@ -148,16 +134,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscure: _obscure1,
                       suffix: IconButton(
                         icon: Icon(
-                            _obscure1
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                            _obscure1 ? Icons.visibility_off : Icons.visibility,
                             color: Colors.black38,
                             size: 20),
-                        onPressed: () =>
-                            setState(() => _obscure1 = !_obscure1),
+                        onPressed: () => setState(() => _obscure1 = !_obscure1),
                       ),
                       validator: (v) {
-                        if (v == null || v.isEmpty) return 'Password is required';
+                        if (v == null || v.isEmpty)
+                          return 'Password is required';
                         if (v.length < 6) return 'Minimum 6 characters';
                         return null;
                       },
@@ -170,13 +154,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscure: _obscure2,
                       suffix: IconButton(
                         icon: Icon(
-                            _obscure2
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                            _obscure2 ? Icons.visibility_off : Icons.visibility,
                             color: Colors.black38,
                             size: 20),
-                        onPressed: () =>
-                            setState(() => _obscure2 = !_obscure2),
+                        onPressed: () => setState(() => _obscure2 = !_obscure2),
                       ),
                       validator: (v) {
                         if (v != _passwordCtrl.text)
@@ -215,8 +196,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed:
-                                auth.isLoading ? null : _handleRegister,
+                            onPressed: auth.isLoading ? null : _handleRegister,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF6C63FF),
                               foregroundColor: Colors.black87,

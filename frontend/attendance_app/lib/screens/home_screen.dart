@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        
         child: SafeArea(
           child: Column(
             children: [
@@ -158,20 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w600,
                           color: Colors.black87),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      student?.studentRollId ?? '',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black.withOpacity(0.6)),
-                    ),
                     if (student?.email != null) ...[
                       const SizedBox(height: 2),
                       Text(
                         student!.email,
                         style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black.withOpacity(0.4)),
+                            fontSize: 12, color: Colors.black.withOpacity(0.4)),
                       ),
                     ],
                   ],
@@ -241,9 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 4),
             Text(
               'Tap to open scanner',
-              style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black.withOpacity(0.6)),
+              style:
+                  TextStyle(fontSize: 13, color: Colors.black.withOpacity(0.6)),
             ),
           ],
         ),
@@ -275,20 +265,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4))
                   ],
                 ),
                 child: Column(
                   children: [
                     Icon(Icons.history,
-                        size: 40,
-                        color: Colors.black.withOpacity(0.2)),
+                        size: 40, color: Colors.black.withOpacity(0.2)),
                     const SizedBox(height: 10),
                     Text(
                       'No attendance records yet',
                       style: TextStyle(
-                          color: Colors.black.withOpacity(0.4),
-                          fontSize: 14),
+                          color: Colors.black.withOpacity(0.4), fontSize: 14),
                     ),
                   ],
                 ),
@@ -301,7 +292,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 3))
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3))
                       ],
                     ),
                     child: Row(
@@ -328,8 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Classroom: ${rec.classroomId}',
@@ -343,8 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 '${rec.timestamp.day}/${rec.timestamp.month}/${rec.timestamp.year}  ${rec.timestamp.hour.toString().padLeft(2, '0')}:${rec.timestamp.minute.toString().padLeft(2, '0')}',
                                 style: TextStyle(
                                     fontSize: 12,
-                                    color:
-                                        Colors.black.withOpacity(0.45)),
+                                    color: Colors.black.withOpacity(0.45)),
                               ),
                             ],
                           ),
@@ -354,8 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             color: rec.attendanceStatus == 'present'
-                                ? const Color(0xFF4CAF50)
-                                    .withOpacity(0.15)
+                                ? const Color(0xFF4CAF50).withOpacity(0.15)
                                 : Colors.orange.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),

@@ -20,6 +20,21 @@ from services import device_service, session_service
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+async def _ensure_device_available_for_uid(uid: str, fingerprint_hash: str) -> None:
+    existing_devices = await query_collection(
+        STUDENTS_COLLECTION,
+        "device_fingerprint_hash",
+        "==",
+        fingerprint_hash,
+    )
+    for doc in existing_devices:
+        if doc.get("uid") != uid:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Device already registered to another account.",
+            )
+
+
 @router.post("/register", response_model=StudentResponse)
 async def register(
     body: StudentRegisterRequest,
@@ -32,9 +47,28 @@ async def register(
     uid = current_user["uid"]
     email = current_user.get("email", "")
 
+    await _ensure_device_available_for_uid(uid, body.device_fingerprint_hash)
+
     # Check if student already registered
     existing = await get_document(STUDENTS_COLLECTION, uid)
     if existing is not None:
+        existing_uuid = existing.get("uuid")
+        existing_fingerprint = existing.get("device_fingerprint_hash")
+        is_device_locked = existing.get("is_device_locked", False)
+        if (
+            is_device_locked
+            and existing_uuid
+            and existing_fingerprint
+            and (
+                existing_uuid != body.uuid
+                or existing_fingerprint != body.device_fingerprint_hash
+            )
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="This account is registered to a different device.",
+            )
+
         print(f"DEBUG: Updating existing student {uid} with name {body.name}", flush=True)
         # Update name and roll ID just in case they were auto-recovered with email prefix
         await update_document(
@@ -43,8 +77,11 @@ async def register(
             {
                 "name": body.name,
                 "student_roll_id": body.student_roll_id,
+                "uuid": body.uuid,
+                "device_fingerprint_hash": body.device_fingerprint_hash,
                 "registered_device_model": body.device_model,
                 "registered_os": body.os_version,
+                "is_device_locked": True,
             }
         )
         print(f"DEBUG: Updated document successfully", flush=True)
@@ -55,20 +92,6 @@ async def register(
             student_roll_id=body.student_roll_id,
             created_at=existing.get("created_at", datetime.now(timezone.utc)),
         )
-
-    # Check device fingerprint uniqueness (query only, no update yet)
-    existing_devices = await query_collection(
-        STUDENTS_COLLECTION,
-        "device_fingerprint_hash",
-        "==",
-        body.device_fingerprint_hash,
-    )
-    for doc in existing_devices:
-        if doc.get("uid") != uid:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Device already registered to another account.",
-            )
 
     now = datetime.now(timezone.utc)
 
@@ -118,12 +141,14 @@ async def login(
     student = await get_document(STUDENTS_COLLECTION, uid)
 
     if student is None:
+        await _ensure_device_available_for_uid(uid, body.device_fingerprint_hash)
+
         # Auto-create student document for accounts that exist in
         # Firebase Auth but are missing in Firestore (partial reg).
         now = datetime.now(timezone.utc)
         student = {
             "uid": uid,
-            "name": email.split("@")[0],   # best-effort name
+            "name": current_user.get("name") or email.split("@")[0],
             "email": email,
             "student_roll_id": "",
             "uuid": body.uuid,
@@ -158,4 +183,3 @@ async def login(
         "uid": uid,
         "name": student.get("name"),
     }
-

@@ -84,6 +84,54 @@ class AdminService {
 
   // ── Classrooms List ────────────────────────────────────────────
 
+  Future<Map<String, dynamic>> releaseDevice({
+    required String studentUid,
+    required String reason,
+  }) async {
+    final token = await _getIdToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    final response = await http.post(
+      Uri.parse('${AppConfig.backendBaseUrl}/admin/release-device'),
+      headers: _headers(token),
+      body: jsonEncode({
+        'student_uid': studentUid,
+        'reason': reason,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      final body = jsonDecode(response.body);
+      throw Exception(body['detail'] ?? 'Failed to release device');
+    }
+  }
+
+  Future<Map<String, dynamic>> grantAdmin({
+    String? uid,
+    String? email,
+  }) async {
+    final token = await _getIdToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    final response = await http.post(
+      Uri.parse('${AppConfig.backendBaseUrl}/admin/grant-admin'),
+      headers: _headers(token),
+      body: jsonEncode({
+        if (uid != null && uid.trim().isNotEmpty) 'uid': uid.trim(),
+        if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      final body = jsonDecode(response.body);
+      throw Exception(body['detail'] ?? 'Failed to grant admin access');
+    }
+  }
+
   /// Fetch all classrooms.
   Future<List<Map<String, dynamic>>> getClassrooms() async {
     final token = await _getIdToken();

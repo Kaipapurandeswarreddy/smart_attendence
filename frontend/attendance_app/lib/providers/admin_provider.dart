@@ -73,6 +73,50 @@ class AdminProvider extends ChangeNotifier {
 
   // ── Classrooms ─────────────────────────────────────────────────
 
+  Future<bool> releaseDevice({
+    required String studentUid,
+    required String reason,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _adminService.releaseDevice(
+        studentUid: studentUid,
+        reason: reason,
+      );
+      await fetchStudents();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> grantAdmin({
+    String? uid,
+    String? email,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _adminService.grantAdmin(uid: uid, email: email);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> fetchClassrooms() async {
     _isLoading = true;
     _error = null;

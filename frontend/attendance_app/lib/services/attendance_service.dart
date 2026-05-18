@@ -16,7 +16,9 @@ class AttendanceResult {
   final Map<String, dynamic>? data;
 
   AttendanceResult.ok(this.message, [this.data]) : success = true;
-  AttendanceResult.error(this.message) : success = false, data = null;
+  AttendanceResult.error(this.message)
+      : success = false,
+        data = null;
 }
 
 /// Orchestrates the full client-side attendance marking pipeline:
@@ -65,6 +67,13 @@ class AttendanceService {
       return AttendanceResult.error('Not authenticated.');
     }
 
+    final sessionToken =
+        await _storage.read(key: AppConfig.secureStorageSessionKey);
+    if (sessionToken == null || sessionToken.isEmpty) {
+      return AttendanceResult.error(
+          'Login session expired. Please sign in again.');
+    }
+
     // 6. Student UUID (used as HMAC key)
     final studentUUID =
         await _storage.read(key: AppConfig.secureStorageStudentUUID) ??
@@ -96,6 +105,7 @@ class AttendanceService {
           'gps_accuracy_meters': position.accuracy,
           'device_uuid': deviceUUID,
           'device_fingerprint_hash': fingerprint,
+          'session_token': sessionToken,
           'payload_timestamp': timestamp,
           'payload_signature': signature,
         }),

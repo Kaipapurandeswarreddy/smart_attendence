@@ -6,6 +6,7 @@ management.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel
@@ -29,6 +30,12 @@ class ReleaseDeviceRequest(BaseModel):
 
 class SetAdminRequest(BaseModel):
     uid: str
+
+
+class GrantAdminRequest(BaseModel):
+    uid: Optional[str] = None
+    email: Optional[str] = None
+
 
 class CreateClassroomRequest(BaseModel):
     id: str
@@ -149,6 +156,43 @@ async def set_admin_claim(
     return {"message": f"Admin claim set for user {body.uid}."}
 
 
+@router.post("/grant-admin")
+async def grant_admin(
+    body: GrantAdminRequest,
+    _admin: dict = Depends(get_admin_user),
+):
+    """
+    Grant admin access from the admin dashboard.
+    Accepts either a Firebase UID or an email address.
+    """
+    uid = body.uid
+    if not uid and body.email:
+        try:
+            user = auth.get_user_by_email(body.email)
+            uid = user.uid
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User with this email was not found.",
+            )
+
+    if not uid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Enter a Firebase UID or email address.",
+        )
+
+    try:
+        auth.set_custom_user_claims(uid, {"admin": True})
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to grant admin access: {exc}",
+        )
+
+    return {"message": f"Admin access granted for user {uid}."}
+
+
 # ── List all students ─────────────────────────────────────────────
 
 @router.get("/students")
@@ -161,6 +205,7 @@ async def list_students(
     students = []
     async for doc in db.collection(STUDENTS_COLLECTION).stream():
         data = doc.to_dict()
+        data["uid"] = data.get("uid") or doc.id
         # Serialise datetime fields for JSON
         for key in ("created_at", "session_created_at"):
             val = data.get(key)
@@ -277,8 +322,7 @@ async def analytics(
     async for s_doc in db.collection(STUDENTS_COLLECTION).stream():
         s_data = s_doc.to_dict()
         name = s_data.get("name", "Unknown")
-        roll = s_data.get("student_roll_id", "")
-        student_map[s_doc.id] = f"{name} ({roll})" if roll else name
+        student_map[s_doc.id] = name
 
     async for doc in db.collection(RECORDS_COLLECTION).stream():
         total_records += 1
@@ -315,4 +359,3 @@ async def analytics(
         "records_by_session": dict(by_session),
         "detailed_records": dict(sorted(detailed_records.items(), reverse=True)),
     }
-
